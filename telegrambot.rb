@@ -1,11 +1,11 @@
-require 'telegram/bot'
+require "telegram/bot"
 
 class TelegramBot
   attr_reader :my_bot, :user_chat_id, :user_first_name, :user_last_name
 
   def initialize(token)
     @my_bot = Telegram::Bot::Client.new(token)
-    @user_chat_id ||= ''
+    @user_chat_id ||= ""
     start_listen
   end
 
@@ -27,10 +27,10 @@ class TelegramBot
             Thread.start(rqst) do |rqst|
               begin
                 case rqst.text
-                when '/start'
+                when "/start"
                   take_user_data(rqst)
                   send_message("Hello #{user_first_name}")
-                when '/stop'
+                when "/stop"
                   send_message("Bye, #{user_first_name}")
                 end
               rescue StandardError

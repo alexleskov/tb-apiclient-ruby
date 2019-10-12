@@ -1,11 +1,11 @@
-require 'json'
-require 'rest-client'
-require_relative 'request.rb'
+require "json"
+require "rest-client"
+require_relative "request.rb"
 
 module Teachbase
   module API
     class User
-      @default_request_params = { 'page' => 1, 'per_page' => 100 } # TODO: Make it as Module for endpoints
+      @default_request_params = { "page" => 1, "per_page" => 100 } # TODO: Make it as Module for endpoints
 
       class << self # TODO: Make it as Module for endpoints
         attr_reader :default_request_params
@@ -30,7 +30,7 @@ module Teachbase
         begin
           check_and_apply_default_req_params
           r = RestClient.get request_url(source_method: @request.source_method, id: url_params[:id].to_s,
-                                         object: @request.object_method), params: request_params.merge!('access_token' => access_token.value)
+                                         object: @request.object_method), params: request_params.merge!("access_token" => access_token.value)
           @request.receive_response(JSON.parse(r.body))
         rescue RestClient::ExceptionWithResponse => e
           case e.http_code
@@ -60,13 +60,13 @@ module Teachbase
         host = @request.api_version
         source_method = url[:source_method].to_s
         object = url[:object].to_s
-        url[:id].to_s ||= ''
+        url[:id].to_s ||= ""
         id = url[:id].to_s
 
         if id.empty?
-          host + '/' + source_method + '/' + object
+          host + "/" + source_method + "/" + object
         else
-          host + '/' + source_method + '/' + id + '/' + object
+          host + "/" + source_method + "/" + id + "/" + object
         end
       end
     end

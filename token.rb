@@ -1,5 +1,5 @@
-require 'json'
-require 'rest-client'
+require "json"
+require "rest-client"
 
 module Teachbase
   module API
@@ -11,14 +11,14 @@ module Teachbase
       def initialize(client_id, client_secret)
         @client_id = client_id
         @client_secret = client_secret
-        @grant_type = 'client_credentials'
+        @grant_type = "client_credentials"
         token_request
       end
 
       def value
         return if @access_token_request.nil?
 
-        @access_token_request['access_token']
+        @access_token_request["access_token"]
       end
 
       def expired?
@@ -29,8 +29,8 @@ module Teachbase
 
       def token_request
         if expired? && value.nil?
-          payload = { 'client_id' => @client_id, 'client_secret' => @client_secret, 'grant_type' => grant_type }
-          r = RestClient.post('https://go.teachbase.ru/oauth/token', payload.to_json, content_type: :json)
+          payload = { "client_id" => @client_id, "client_secret" => @client_secret, "grant_type" => grant_type }
+          r = RestClient.post("https://go.teachbase.ru/oauth/token", payload.to_json, content_type: :json)
           @access_token_request = JSON.parse(r.body)
           @expired_at = access_token_expired_at
         else
@@ -48,8 +48,8 @@ module Teachbase
       protected
 
       def access_token_expired_at
-        token_created_at = Time.at(@access_token_request['created_at']).utc
-        expires_in = @access_token_request['expires_in']
+        token_created_at = Time.at(@access_token_request["created_at"]).utc
+        expires_in = @access_token_request["expires_in"]
         expired_at = token_created_at + TOKEN_TIME_LIMIT # TODO: Save "expires_at" in database and remove this const
       end
     end
