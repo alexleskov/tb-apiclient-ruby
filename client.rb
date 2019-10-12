@@ -2,7 +2,6 @@ require_relative 'token.rb'
 require_relative 'request.rb'
 require_relative 'user.rb'
 
-
 module Teachbase
   module API
     class Client
@@ -18,7 +17,7 @@ module Teachbase
       end
 
       def request(method_name, params = {})
-        request = Request.new(method_name, params, access_token = token, api_version )
+        request = Request.new(method_name, params, access_token = token, api_version)
       end
 
       def choose_version(version)
@@ -31,7 +30,6 @@ module Teachbase
           MOBILE_V2_API_URL
         end
       end
-
     end
   end
 end

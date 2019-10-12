@@ -2,13 +2,12 @@ require 'json'
 require 'rest-client'
 require_relative 'request.rb'
 
-
 module Teachbase
   module API
     class User
-      @default_request_params = { 'page' => 1, 'per_page' => 100 } #TODO: Make it as Module for endpoints
+      @default_request_params = { 'page' => 1, 'per_page' => 100 } # TODO: Make it as Module for endpoints
 
-      class << self #TODO: Make it as Module for endpoints
+      class << self # TODO: Make it as Module for endpoints
         attr_reader :default_request_params
 
         def set_default_request_param(param, value)
@@ -31,7 +30,7 @@ module Teachbase
         begin
           check_and_apply_default_req_params
           r = RestClient.get request_url(source_method: @request.source_method, id: url_params[:id].to_s,
-                                         object: @request.object_method), params: request_params.merge!({ 'access_token' => access_token.value })
+                                         object: @request.object_method), params: request_params.merge!('access_token' => access_token.value)
           @request.receive_response(JSON.parse(r.body))
         rescue RestClient::ExceptionWithResponse => e
           case e.http_code
@@ -45,7 +44,7 @@ module Teachbase
 
       protected
 
-      def check_and_apply_default_req_params #TODO: Make it as Module for endpoints
+      def check_and_apply_default_req_params # TODO: Make it as Module for endpoints
         parameters = self.class.default_request_params.keys
         return if parameters.empty?
 
@@ -55,7 +54,7 @@ module Teachbase
         end
       end
 
-      def request_url(url = {}) #TODO: Make it as Module for endpoints
+      def request_url(url = {}) # TODO: Make it as Module for endpoints
         return if url.empty?
 
         host = @request.api_version
@@ -70,7 +69,6 @@ module Teachbase
           host + '/' + source_method + '/' + id + '/' + object
         end
       end
-
     end
   end
 end

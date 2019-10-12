@@ -17,11 +17,13 @@ module Teachbase
 
       def value
         return if @access_token_request.nil?
+
         @access_token_request['access_token']
       end
 
       def expired?
         return true if @access_token_request.nil?
+
         true ? Time.now.utc >= expired_at : false
       end
 
@@ -50,7 +52,6 @@ module Teachbase
         expires_in = @access_token_request['expires_in']
         expired_at = token_created_at + TOKEN_TIME_LIMIT # TODO: Save "expires_at" in database and remove this const
       end
-
     end
   end
 end

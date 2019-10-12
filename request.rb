@@ -5,8 +5,8 @@ require_relative 'user.rb'
 module Teachbase
   module API
     class Request
-      SPLIT_SYMBOL = "_"
-      @endpoints = {"users" => User} #TODO: "clickmeeting_meetings" => Clickmeeting_meeting
+      SPLIT_SYMBOL = '_'.freeze
+      @endpoints = { 'users' => User } # TODO: "clickmeeting_meetings" => Clickmeeting_meeting
 
       class << self
         attr_reader :endpoints
@@ -19,8 +19,8 @@ module Teachbase
         @access_token = access_token
         @api_version = api_version
         @url_params = params
-        @request_params = {'page' => url_params[:page].to_i,
-                          'per_page' => url_params[:per_page].to_i}
+        @request_params = { 'page' => url_params[:page].to_i,
+                            'per_page' => url_params[:per_page].to_i }
         send_request(find_endpoint(method_name), object_method)
       end
 
@@ -39,7 +39,8 @@ module Teachbase
           @source_method = method_name[0]
           @object_method = method_name[1]
         end
-        return if !self.class.endpoints.key?(source_method)
+        return unless self.class.endpoints.key?(source_method)
+
         self.class.endpoints[source_method]
       end
 
@@ -48,7 +49,6 @@ module Teachbase
         destination = source.new(request = self)
         destination.public_send(object) if destination.respond_to? object
       end
-
     end
   end
 end
