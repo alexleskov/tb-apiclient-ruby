@@ -1,73 +1,54 @@
 require 'json'
 require 'rest-client'
-require_relative 'client.rb'
+require_relative 'user.rb'
 
 module Teachbase
   module API
     class Request
-      @default_request_params = { 'page' => 1, 'per_page' => 100 }
+      SPLIT_SYMBOL = "_"
+      @endpoints = {"users" => User} #TODO: "clickmeeting_meetings" => Clickmeeting_meeting
 
       class << self
-        attr_reader :default_request_params
-        def set_default_request_param(param, value)
-          @default_request_params[param.to_s] = value
-        end
+        attr_reader :endpoints
       end
 
-      attr_reader :url_params, :access_token, :request_params
+      attr_reader :source_method, :object_method, :request_params, :url_params, :access_token, :response, :api_version
 
-      def initialize(url_params, access_token)
-        @url_params = url_params
-        @access_token = { 'access_token' => access_token }
-        @request_params = { 'page' => url_params[:page].to_i, 'per_page' => url_params[:per_page].to_i }
+      def initialize(method_name, params, access_token, api_version)
+        method_name = method_name.to_s
+        @access_token = access_token
+        @api_version = api_version
+        @url_params = params
+        @request_params = {'page' => url_params[:page].to_i,
+                          'per_page' => url_params[:per_page].to_i}
+        send_request(find_endpoint(method_name), object_method)
       end
 
-      def users_sections
-        return unless url_params.include?(:id)
-
-        begin
-          source_method = 'users'
-          object = 'sections'
-          check_and_apply_default_req_params
-          r = RestClient.get request_url(source_method: source_method, id: url_params[:id].to_s, object: object), params: request_params.merge!(access_token)
-          teachbase_response = JSON.parse(r.body)
-        rescue RestClient::ExceptionWithResponse => e
-          case e.http_code
-          when 301, 302, 307
-            e.response.follow_redirection
-          else
-            raise
-          end
-        end
+      def receive_response(answer)
+        @response = answer
       end
 
       protected
 
-      def check_and_apply_default_req_params
-        parameters = self.class.default_request_params.keys
-        return if parameters.empty?
-
-        parameters.each do |parametr|
-          parametr = parametr.to_s
-          @request_params[parametr] = self.class.default_request_params[parametr] if request_params[parametr].zero?
-        end
-      end
-
-      def request_url(url = {})
-        return if url.empty?
-
-        host = Teachbase::API::Client::BASE_API_URL
-        source_method = url[:source_method].to_s
-        object = url[:object].to_s
-        url[:id].to_s ||= ''
-        id = url[:id].to_s
-
-        if id.empty?
-          host + '/' + source_method + '/' + object
+      def find_endpoint(method_name)
+        method_name = method_name.split(SPLIT_SYMBOL)
+        if method_name.size == 3
+          @source_method = method_name[0] + SPLIT_SYMBOL + method_name[1]
+          @object_method = method_name[2]
         else
-          host + '/' + source_method + '/' + id + '/' + object
+          @source_method = method_name[0]
+          @object_method = method_name[1]
         end
+        return if !self.class.endpoints.key?(source_method)
+        self.class.endpoints[source_method]
       end
+
+      def send_request(source, object)
+        access_token.token_request
+        destination = source.new(request = self)
+        destination.public_send(object) if destination.respond_to? object
+      end
+
     end
   end
 end
