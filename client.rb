@@ -22,7 +22,7 @@ module Teachbase
       end
 
       def request(method_name, params = {})
-        request = Request.new(method_name, params, self) # token, api_version)
+        request = Request.new(method_name, params, self)
       end
 
       protected
