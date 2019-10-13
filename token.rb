@@ -8,7 +8,7 @@ module Teachbase
 
       attr_reader :grant_type, :expired_at
 
-      def initialize(client_id = "7b61bdaaac5c1d46c151146a06596f2fd0691205f97a21b3d0c4fcb3a25e29cc", client_secret = "5223957f6f2c72caf2ea2e061d6d0b9378a9ce01ce3e9ac6813b2b78f1a0ae64")
+      def initialize(client_id, client_secret)
         @client_id = client_id
         @client_secret = client_secret
         @grant_type = "client_credentials"

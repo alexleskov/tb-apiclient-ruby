@@ -16,7 +16,9 @@ module Teachbase
       end
 
       def sections
-        raise "'#{request.method_name}' must have 1 'id' in URL" if request.url_ids.nil? || request.url_ids.size != 1
+        if request.url_ids.nil? || request.url_ids.size != 1
+          raise "'#{request.method_name}' must have 1 'id' in request"
+        end
         raise "Must have 'id' for '#{request.method_name}' method" unless request.url_ids.include?(:id)
 
         begin
