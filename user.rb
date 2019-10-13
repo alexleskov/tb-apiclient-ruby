@@ -11,6 +11,7 @@ module Teachbase
 
       def initialize(request)
         raise "'#{request}' must be 'Teachbase::API::Request'" unless request.is_a?(Teachbase::API::Request)
+
         @request = request
         self.class.default_request_params
       end
@@ -35,7 +36,6 @@ module Teachbase
           end
         end
       end
-
     end
   end
 end

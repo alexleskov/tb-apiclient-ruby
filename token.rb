@@ -53,7 +53,7 @@ module Teachbase
         token_created_at = Time.at(@access_token_response["created_at"]).utc
         expires_in = @access_token_response["expires_in"]
         expired_at = token_created_at + TOKEN_TIME_LIMIT # TODO: Save "expires_in" in database and replace this const on it
-        #expired_at = token_created_at + expires_in
+        # expired_at = token_created_at + expires_in
       end
     end
   end

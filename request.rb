@@ -4,7 +4,7 @@ module Teachbase
   module API
     class Request
       SPLIT_SYMBOL = "_".freeze
-      URL_ID_PARAMS_FORMAT = /(^id|_id$)/
+      URL_ID_PARAMS_FORMAT = /(^id|_id$)/.freeze
 
       attr_reader :source_method, :object_method, :response, :client, :method_name, :request_url,
                   :url_params, :url_ids
@@ -28,11 +28,11 @@ module Teachbase
         ind_obj = 0
         ind_ids = 0
 
-        if !@params.empty?
+        unless @params.empty?
           url_ids_params = @params.select { |param| param =~ URL_ID_PARAMS_FORMAT }
           @url_ids = url_ids_params
           url_params = @params
-          @url_params = url_params.delete_if {|key, value| url_ids_params.keys.include?(key)}
+          @url_params = url_params.delete_if { |key, _value| url_ids_params.keys.include?(key) }
           url_ids_params = url_ids_params.to_a
         end
 
@@ -46,14 +46,14 @@ module Teachbase
         end
 
         url_objects.unshift(host, source_method).join("/")
-      end      
+      end
 
       def find_endpoint(method_name)
         method_name = method_name.split(SPLIT_SYMBOL)
         @source_method = method_name.shift
         @object_method = method_name.join(SPLIT_SYMBOL)
         raise "'#{source_method}' no such endpoint" unless client.class.endpoints.key?(source_method)
-        
+
         client.class.endpoints[source_method]
       end
 

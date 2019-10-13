@@ -6,13 +6,12 @@ module RequestDefault
   end
 
   module ClassMethods
-
     def set_default_request_params(parametr, value)
       @default_request_params[parametr.to_sym] = value
     end
 
     def default_request_params
-      @default_request_params = { :page => 1, :per_page => 100 }
+      @default_request_params = { page: 1, per_page: 100 }
     end
   end
 
