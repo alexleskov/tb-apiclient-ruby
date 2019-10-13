@@ -4,11 +4,11 @@ require "rest-client"
 module Teachbase
   module API
     class Token
-      TOKEN_TIME_LIMIT = 7200 # TODO: Save "expires_at" in database and remove this const
+      TOKEN_TIME_LIMIT = 7200 # TODO: Save "expires_in" in database and remove this const
 
       attr_reader :grant_type, :expired_at
 
-      def initialize(client_id, client_secret)
+      def initialize(client_id = "7b61bdaaac5c1d46c151146a06596f2fd0691205f97a21b3d0c4fcb3a25e29cc", client_secret = "5223957f6f2c72caf2ea2e061d6d0b9378a9ce01ce3e9ac6813b2b78f1a0ae64")
         @client_id = client_id
         @client_secret = client_secret
         @grant_type = "client_credentials"
@@ -16,25 +16,27 @@ module Teachbase
       end
 
       def value
-        return if @access_token_request.nil?
+        return if @access_token_response.nil?
 
-        @access_token_request["access_token"]
+        @access_token_response["access_token"]
       end
 
       def expired?
-        return true if @access_token_request.nil?
+        return true if @access_token_response.nil?
 
         true ? Time.now.utc >= expired_at : false
       end
 
       def token_request
         if expired? && value.nil?
-          payload = { "client_id" => @client_id, "client_secret" => @client_secret, "grant_type" => grant_type }
-          r = RestClient.post("https://go.teachbase.ru/oauth/token", payload.to_json, content_type: :json)
-          @access_token_request = JSON.parse(r.body)
+          payload = { "client_id" => @client_id, "client_secret" => @client_secret,
+                      "grant_type" => grant_type }
+          r = RestClient.post("https://go.teachbase.ru/oauth/token", payload.to_json,
+                              content_type: :json)
+          @access_token_response = JSON.parse(r.body)
           @expired_at = access_token_expired_at
         else
-          @access_token_request
+          @access_token_response
         end
       rescue RestClient::ExceptionWithResponse => e
         case e.http_code
@@ -48,9 +50,10 @@ module Teachbase
       protected
 
       def access_token_expired_at
-        token_created_at = Time.at(@access_token_request["created_at"]).utc
-        expires_in = @access_token_request["expires_in"]
-        expired_at = token_created_at + TOKEN_TIME_LIMIT # TODO: Save "expires_at" in database and remove this const
+        token_created_at = Time.at(@access_token_response["created_at"]).utc
+        expires_in = @access_token_response["expires_in"]
+        expired_at = token_created_at + TOKEN_TIME_LIMIT # TODO: Save "expires_in" in database and replace this const on it
+        #expired_at = token_created_at + expires_in
       end
     end
   end

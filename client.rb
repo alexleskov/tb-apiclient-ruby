@@ -1,13 +1,20 @@
 require_relative "token.rb"
 require_relative "request.rb"
-require_relative "user.rb"
+
 
 module Teachbase
   module API
     class Client
-      BASE_API_URL = "https://go.teachbase.ru/endpoint/v1".freeze
-      MOBILE_V1_API_URL = "https://go.teachbase.ru/mobile/v1/".freeze
-      MOBILE_V2_API_URL = "https://go.teachbase.ru/mobile/v2/".freeze
+
+      class << self
+        attr_reader :versions, :endpoints
+      end
+
+      @versions = {endpoint_v1: "https://go.teachbase.ru/endpoint/v1",
+                   mobile_v1: "https://go.teachbase.ru/mobile/v1",
+                   mobile_v2: "https://go.teachbase.ru/mobile/v2"}.freeze
+
+      @endpoints = { "users" => User } # TODO: "clickmeeting_meetings" => Clickmeeting_meeting
 
       attr_reader :token, :api_version
 
@@ -17,17 +24,16 @@ module Teachbase
       end
 
       def request(method_name, params = {})
-        request = Request.new(method_name, params, access_token = token, api_version)
+        request = Request.new(method_name, params, self) #token, api_version)
       end
 
+      protected
+
       def choose_version(version)
-        case version
-        when :endpoint_v1
-          BASE_API_URL
-        when :mobile_v1
-          MOBILE_V1_API_URL
-        when :mobile_v2
-          MOBILE_V2_API_URL
+        if !self.class.versions.key?(version.to_sym)
+          raise "API version '#{version}' not exists.\nAvaliable: #{self.class.versions.keys}"
+        else
+          self.class.versions[version.to_sym]
         end
       end
     end
