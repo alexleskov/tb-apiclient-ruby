@@ -1,6 +1,6 @@
 require_relative "request.rb"
 
-module RequestDefault
+module RequestDefaultParam
   def self.included(base)
     base.extend ClassMethods
   end

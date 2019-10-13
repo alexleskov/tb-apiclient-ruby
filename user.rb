@@ -1,11 +1,11 @@
 require "json"
 require "rest-client"
-require_relative "request_default.rb"
+require_relative "request_default_param.rb"
 
 module Teachbase
   module API
     class User
-      include RequestDefault
+      include RequestDefaultParam
 
       attr_reader :request, :answer
 
