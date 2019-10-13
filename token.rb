@@ -1,17 +1,29 @@
 require "json"
 require "rest-client"
+require "encrypted_strings"
 
 module Teachbase
   module API
     class Token
       TOKEN_TIME_LIMIT = 7200 # TODO: Save "expires_in" in database and remove this const
 
-      attr_reader :grant_type, :expired_at
+      class << self
+        attr_reader :versions, :oauth_data_mobile, :oauth_data_endpoint
+      end
 
-      def initialize(client_id, client_secret)
-        @client_id = client_id
-        @client_secret = client_secret
-        @grant_type = "client_credentials"
+      @versions = { endpoint_v1: "client_credentials",
+                    mobile_v1: "password",
+                    mobile_v2: "password" }.freeze
+      @oauth_data_mobile = %i[user_email password client_id client_secret].sort.freeze
+      @oauth_data_endpoint = %i[client_id client_secret].sort.freeze
+
+      attr_reader :grant_type, :expired_at, :version
+
+      def initialize(version, oauth_params)
+        @version = version
+        @oauth_params = oauth_params
+        encrypt_oauth_params
+        @grant_type = self.class.versions[version]
         token_request
       end
 
@@ -29,8 +41,7 @@ module Teachbase
 
       def token_request
         if expired? && value.nil?
-          payload = { "client_id" => @client_id, "client_secret" => @client_secret,
-                      "grant_type" => grant_type }
+          payload = create_payload
           r = RestClient.post("https://go.teachbase.ru/oauth/token", payload.to_json,
                               content_type: :json)
           @access_token_response = JSON.parse(r.body)
@@ -48,6 +59,27 @@ module Teachbase
       end
 
       protected
+
+      def encrypt_oauth_params
+        @oauth_params.each { |_key, param| param.encrypt!(:symmetric, password: 'secret_key') }
+      end
+
+      def mobile_version?
+        %i[mobile_v1 mobile_v2].include? self.class.versions.key(grant_type)
+      end
+
+      def create_payload
+        if mobile_version? && self.class.oauth_data_mobile == @oauth_params.keys.sort
+          payload = { "client_id" => @oauth_params[:client_id].decrypt, "client_secret" => @oauth_params[:client_secret].decrypt,
+                      "grant_type" => grant_type, "username" => @oauth_params[:user_email].decrypt, "password" => @oauth_params[:password].decrypt }
+        elsif !mobile_version? && self.class.oauth_data_endpoint == @oauth_params.keys.sort
+          payload = { "client_id" => @oauth_params[:client_id].decrypt, "client_secret" => @oauth_params[:client_secret].decrypt,
+                      "grant_type" => grant_type }
+        else
+          raise "Not correct oauth params for token request.\n
+                 Needed for mobile:'#{self.class.oauth_data_mobile}', for endpoint: '#{self.class.oauth_data_endpoint}'"
+        end
+      end
 
       def access_token_expired_at
         token_created_at = Time.at(@access_token_response["created_at"]).utc

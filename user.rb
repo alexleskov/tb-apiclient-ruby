@@ -24,7 +24,7 @@ module Teachbase
 
         begin
           check_and_apply_default_req_params
-          r = RestClient.get request.request_url, params: request.url_params.merge!("access_token" => request.client.token.value)
+          r = RestClient.get request.request_url, params: request.url_params.merge!("access_token" => request.client.token.value), 'X-Account-Id': request.request_headers["X-Account-Id"].to_s
           @answer = JSON.parse(r.body)
           request.receive_response(self)
         rescue RestClient::ExceptionWithResponse => e
