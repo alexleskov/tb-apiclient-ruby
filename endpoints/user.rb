@@ -1,6 +1,6 @@
 require "json"
 require "rest-client"
-require_relative "request_default_param.rb"
+require_relative "../request_default_param.rb"
 
 module Teachbase
   module API
@@ -24,7 +24,8 @@ module Teachbase
 
         begin
           check_and_apply_default_req_params
-          r = RestClient.get request.request_url, params: request.url_params.merge!("access_token" => request.client.token.value), 'X-Account-Id': request.request_headers["X-Account-Id"].to_s
+          r = RestClient.get request.request_url, params: request.url_params,
+                                                  "X-Account-Id" => request.url_params[:accountid].to_s ||= ""
           @answer = JSON.parse(r.body)
           request.receive_response(self)
         rescue RestClient::ExceptionWithResponse => e

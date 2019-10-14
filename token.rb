@@ -8,14 +8,12 @@ module Teachbase
       TOKEN_TIME_LIMIT = 7200 # TODO: Save "expires_in" in database and remove this const
 
       class << self
-        attr_reader :versions, :oauth_data_mobile, :oauth_data_endpoint
+        attr_reader :versions
       end
 
       @versions = { endpoint_v1: "client_credentials",
                     mobile_v1: "password",
                     mobile_v2: "password" }.freeze
-      @oauth_data_mobile = %i[user_email password client_id client_secret].sort.freeze
-      @oauth_data_endpoint = %i[client_id client_secret].sort.freeze
 
       attr_reader :grant_type, :expired_at, :version
 
@@ -61,24 +59,30 @@ module Teachbase
       protected
 
       def encrypt_oauth_params
-        @oauth_params.each { |_key, param| param.encrypt!(:symmetric, password: 'secret_key') }
+        @oauth_params.each_value do |param|
+          param.encrypt!(:symmetric, password: Teachbase::API::Client::ENCRYPT_KEY_OAUTH_DATA)
+        end
       end
 
       def mobile_version?
         %i[mobile_v1 mobile_v2].include? self.class.versions.key(grant_type)
       end
 
+      def oauth_mobile_param?
+        !([@oauth_params[:user_email], @oauth_params[:password]].any? { |key| key.nil? || key.empty? })
+      end
+
       def create_payload
-        if mobile_version? && self.class.oauth_data_mobile == @oauth_params.keys.sort
-          payload = { "client_id" => @oauth_params[:client_id].decrypt, "client_secret" => @oauth_params[:client_secret].decrypt,
-                      "grant_type" => grant_type, "username" => @oauth_params[:user_email].decrypt, "password" => @oauth_params[:password].decrypt }
-        elsif !mobile_version? && self.class.oauth_data_endpoint == @oauth_params.keys.sort
-          payload = { "client_id" => @oauth_params[:client_id].decrypt, "client_secret" => @oauth_params[:client_secret].decrypt,
-                      "grant_type" => grant_type }
-        else
-          raise "Not correct oauth params for token request.\n
-                 Needed for mobile:'#{self.class.oauth_data_mobile}', for endpoint: '#{self.class.oauth_data_endpoint}'"
+        payload = { "client_id" => @oauth_params[:client_id].decrypt,
+                    "client_secret" => @oauth_params[:client_secret].decrypt,
+                    "grant_type" => grant_type }
+        if mobile_version? && oauth_mobile_param?
+          payload.merge!("username" => @oauth_params[:user_email].decrypt,
+                         "password" => @oauth_params[:password].decrypt)
+        elsif mobile_version? && !oauth_mobile_param?
+          raise "Not correct oauth params for Mobile API version token request."
         end
+        payload
       end
 
       def access_token_expired_at
