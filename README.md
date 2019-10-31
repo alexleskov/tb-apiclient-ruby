@@ -40,8 +40,14 @@ It can be setted in config/secrets.yml too.
 
 ```ruby
 api = Teachbase::API::Client.new :endpoint_v1, client_id: "", client_secret: ""
-api.request :users_sections, id:666 #where 'users_sections' is users/{user_id}/sections, and 'id:666' is user_id
+api.request :users_sections, id:666
+
+# where 'users_sections' is users/{user_id}/sections, and 'id:666' is user id
+# https://go.teachbase.ru/api-docs/index.html#/competences/get_users__id__sections
+
 ```
+
+See more about other methods in API docs: https://go.teachbase.ru/api-docs/
 
 ### Getting Response
 
@@ -51,4 +57,5 @@ api.request :users_sections, id:666
 api.response #api.response.answer - return only json
 ```
 
-
+## Available methods
+In progess. Look for available methods in 'endpoints' folder.
