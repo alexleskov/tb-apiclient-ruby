@@ -21,7 +21,7 @@ Mobile v2:
 
 `Teachbase::API::Client.new :mobile_v2, user_email: "", password: ""`
 
-For success authorization in Teachbase API if you using mobile endpoints must have set up 'accountid':
+For success authorization in Teachbase API if you are using mobile endpoints than must have set up 'accountid':
 
 ```
 api = Teachbase::API::Client.new :mobile_v2, user_email: "", password: ""
