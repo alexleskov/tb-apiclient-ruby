@@ -1,6 +1,4 @@
-require "json"
-require "rest-client"
-require_relative "../request_default_param.rb"
+require './lib/request_default_param'
 
 module Teachbase
   module API

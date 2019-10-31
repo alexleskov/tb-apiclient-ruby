@@ -2,7 +2,7 @@ require './lib/request_default_param'
 
 module Teachbase
   module API
-    class Profile
+    class CourseSession
       include RequestDefaultParam
 
       attr_reader :request, :answer
@@ -11,10 +11,18 @@ module Teachbase
         raise "'#{request}' must be 'Teachbase::API::Request'" unless request.is_a?(Teachbase::API::Request)
 
         @request = request
-        # self.class.default_request_params
+        self.class.default_request_params
       end
 
-      def profile
+      def /
+        if request.url_ids.nil? || request.url_ids.size != 1
+          raise "'#{request.method_name}' must have 1 'id' in request"
+        end
+        raise "Must have 'id' for '#{request.method_name}' method" unless request.url_ids.include?(:id)
+        course_sessions
+      end
+
+      def course_sessions
         r = RestClient.get request.request_url, params: request.url_params,
                                                 "X-Account-Id" => request.url_params[:accountid].to_s ||= ""
         @answer = JSON.parse(r.body)

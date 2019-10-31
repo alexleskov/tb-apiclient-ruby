@@ -1,7 +1,3 @@
-require "json"
-require "rest-client"
-require "encrypted_strings"
-
 module Teachbase
   module API
     class Token
@@ -15,38 +11,37 @@ module Teachbase
                     mobile_v1: "password",
                     mobile_v2: "password" }.freeze
 
-      attr_reader :grant_type, :expired_at, :version
+      attr_reader :grant_type, :expired_at, :version, :value
 
       def initialize(version, oauth_params)
         @version = version
         @oauth_params = oauth_params
-        encrypt_oauth_params
         @grant_type = self.class.versions[version]
-        token_request
+        load_token
       end
 
-      def value
-        return if @access_token_response.nil?
-
-        @access_token_response["access_token"]
+      def load_token
+        if @oauth_params[:access_token]
+          @value = @oauth_params[:access_token].to_s
+        elsif #expired?
+          @value = token_request["access_token"]
+          raise "API token '#{value}' is null" if value.nil?
+        end
       end
 
-      def expired?
-        return true if @access_token_response.nil?
-
-        true ? Time.now.utc >= expired_at : false
-      end
+      #def expired?
+      #  return if @access_token_response.nil? || @access_token_response["access_token"].empty?
+      #  expired_at >= Time.now.utc
+      #end
 
       def token_request
-        if expired? && value.nil?
-          payload = create_payload
-          r = RestClient.post("https://go.teachbase.ru/oauth/token", payload.to_json,
-                              content_type: :json)
-          @access_token_response = JSON.parse(r.body)
-          @expired_at = access_token_expired_at
-        else
-          @access_token_response
-        end
+        #return if !expired?
+        payload = create_payload
+        r = RestClient.post("https://go.teachbase.ru/oauth/token", payload.to_json,
+                            content_type: :json)
+        @access_token_response = JSON.parse(r.body)
+        @expired_at = access_token_expired_at
+        @access_token_response
       rescue RestClient::ExceptionWithResponse => e
         case e.http_code
         when 301, 302, 307
@@ -58,12 +53,6 @@ module Teachbase
 
       protected
 
-      def encrypt_oauth_params
-        @oauth_params.each_value do |param|
-          param.encrypt!(:symmetric, password: Teachbase::API::Client::ENCRYPT_KEY_OAUTH_DATA)
-        end
-      end
-
       def mobile_version?
         %i[mobile_v1 mobile_v2].include? self.class.versions.key(grant_type)
       end
@@ -73,12 +62,12 @@ module Teachbase
       end
 
       def create_payload
-        payload = { "client_id" => @oauth_params[:client_id].decrypt,
-                    "client_secret" => @oauth_params[:client_secret].decrypt,
+        payload = { "client_id" => @oauth_params[:client_id],
+                    "client_secret" => @oauth_params[:client_secret],
                     "grant_type" => grant_type }
         if mobile_version? && oauth_mobile_param?
-          payload.merge!("username" => @oauth_params[:user_email].decrypt,
-                         "password" => @oauth_params[:password].decrypt)
+          payload.merge!("username" => @oauth_params[:user_email],
+                         "password" => @oauth_params[:password])
         elsif mobile_version? && !oauth_mobile_param?
           raise "Not correct oauth params for Mobile API version token request."
         end

@@ -1,11 +1,13 @@
-require_relative "token.rb"
-require_relative "request.rb"
-require "encrypted_strings"
+require './lib/token'
+require './lib/request'
+require './lib/app_configurator'
+
+require "json"
+require "rest-client"
 
 module Teachbase
   module API
     class Client
-      ENCRYPT_KEY_OAUTH_DATA = "secret_key".freeze
 
       class << self
         attr_reader :versions
@@ -15,12 +17,14 @@ module Teachbase
                     mobile_v1: "https://go.teachbase.ru/mobile/v1",
                     mobile_v2: "https://go.teachbase.ru/mobile/v2" }.freeze
 
-      attr_reader :token, :api_version
+      attr_reader :token, :api_version, :accountid
 
       def initialize(version, oauth_params = {})
+        config = AppConfigurator.new
         @api_version = choose_version(version)
-        oauth_params[:client_id] = ""
-        oauth_params[:client_secret] = ""
+        oauth_params[:client_id] = config.get_api_client_id
+        oauth_params[:client_secret] = config.get_api_client_secret
+        @accountid = config.get_api_accountid
 
         unless oauth_client_param?(oauth_params[:client_id], oauth_params[:client_secret])
           raise "Set up 'client_id' and 'client_secret'"

@@ -1,4 +1,4 @@
-require_relative "request.rb"
+require './lib/request'
 
 module RequestDefaultParam
   def self.included(base)

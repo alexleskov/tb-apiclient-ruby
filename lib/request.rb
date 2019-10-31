@@ -1,5 +1,6 @@
-require_relative "endpoints/user.rb"
-require_relative "endpoints/profile.rb"
+require './endpoints/profile'
+require './endpoints/user'
+require './endpoints/course_session'
 
 module Teachbase
   module API
@@ -7,7 +8,7 @@ module Teachbase
       SPLIT_SYMBOL = "_".freeze
       URL_ID_PARAMS_FORMAT = /(^id|_id$)/.freeze
 
-      @endpoints = { "users" => User, "profile" => Profile } # TODO: "clickmeeting-meetings" => ClickmeetingMeeting
+      @endpoints = { "users" => User, "profile" => Profile, "course_sessions" => CourseSession } # TODO: "clickmeeting-meetings" => ClickmeetingMeeting
 
       class << self
         attr_reader :endpoints
@@ -33,10 +34,11 @@ module Teachbase
         ind_ids = 0
         host = client.api_version
         url_objects = @object_method
-        @object_method = @object_method.join(SPLIT_SYMBOL)
+        @object_method = @object_method.join(SPLIT_SYMBOL).gsub(/-/,SPLIT_SYMBOL)
         url_ids_params = @params.select { |param| param =~ URL_ID_PARAMS_FORMAT }
         @url_params = @params
         @url_params["access_token"] = client.token.value
+        @url_params[:accountid] = client.accountid
         unless url_ids_params.nil? || url_ids_params.empty?
           @url_ids = url_ids_params
           @url_params = url_params.delete_if { |key, _value| url_ids_params.keys.include?(key) }
@@ -49,6 +51,8 @@ module Teachbase
           end
         end
 
+        url_objects.each {|object| object.gsub!(/-/,SPLIT_SYMBOL) }
+
         if @source_method == @object_method
           url_objects.unshift(host).join("/")
         else
@@ -59,13 +63,14 @@ module Teachbase
       def find_endpoint(method_name)
         @object_method = @method_name = method_name.split(SPLIT_SYMBOL)
         @source_method = @method_name.size == 1 ? @method_name.join(SPLIT_SYMBOL) : @method_name.shift
+        @source_method.gsub!(/-/,SPLIT_SYMBOL)
         raise "'#{@source_method}' no such endpoint" unless self.class.endpoints.key?(@source_method)
 
         self.class.endpoints[@source_method]
       end
 
       def send_request
-        client.token.token_request
+        #client.token.token_request
         endpoint_class = find_endpoint(method_name)
         @request_url = create_request_url
         endpoint = endpoint_class.new(self)
