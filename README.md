@@ -34,9 +34,9 @@ api = Teachbase::API::Client.new :mobile_v2, user_email: "", password: ""
 api.accountid = "777"
 ```
 
-It can be added in in config/secrets.yml too
+It can be setted in config/secrets.yml too.
 
-### Sending reqeuest
+### Sending Request
 
 ```ruby
 api = Teachbase::API::Client.new :endpoint_v1, client_id: "", client_secret: ""
