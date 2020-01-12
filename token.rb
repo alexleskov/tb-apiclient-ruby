@@ -1,3 +1,6 @@
+require "json"
+require "rest-client"
+
 module Teachbase
   module API
     class Token
@@ -23,19 +26,13 @@ module Teachbase
       def load_token
         if @oauth_params[:access_token]
           @value = @oauth_params[:access_token].to_s
-        elsif #expired?
+        else
           @value = token_request["access_token"]
           raise "API token '#{value}' is null" if value.nil?
         end
       end
 
-      #def expired?
-      #  return if @access_token_response.nil? || @access_token_response["access_token"].empty?
-      #  expired_at >= Time.now.utc
-      #end
-
       def token_request
-        #return if !expired?
         payload = create_payload
         r = RestClient.post("https://go.teachbase.ru/oauth/token", payload.to_json,
                             content_type: :json)
@@ -78,7 +75,6 @@ module Teachbase
         token_created_at = Time.at(@access_token_response["created_at"]).utc
         expires_in = @access_token_response["expires_in"]
         expired_at = token_created_at + TOKEN_TIME_LIMIT # TODO: Save "expires_in" in database and replace this const on it
-        # expired_at = token_created_at + expires_in
       end
     end
   end

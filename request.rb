@@ -1,18 +1,8 @@
-require './endpoints/profile'
-require './endpoints/user'
-require './endpoints/course_session'
-
 module Teachbase
   module API
     class Request
       SPLIT_SYMBOL = "_".freeze
       URL_ID_PARAMS_FORMAT = /(^id|_id$)/.freeze
-
-      @endpoints = { "users" => User, "profile" => Profile, "course_sessions" => CourseSession } # TODO: "clickmeeting-meetings" => ClickmeetingMeeting
-
-      class << self
-        attr_reader :endpoints
-      end
 
       attr_reader :response, :client, :method_name, :request_url, :url_params, :url_ids
 
@@ -29,12 +19,16 @@ module Teachbase
 
       protected
 
+      def get_endpoint_version
+        client.token.version.to_s.split('_').collect(&:capitalize).join
+      end
+
       def create_request_url
         ind_obj = 0
         ind_ids = 0
         host = client.api_version
         url_objects = @object_method
-        @object_method = @object_method.join(SPLIT_SYMBOL).gsub(/-/,SPLIT_SYMBOL)
+        @object_method = @object_method.join(SPLIT_SYMBOL).gsub(/-/, SPLIT_SYMBOL)
         url_ids_params = @params.select { |param| param =~ URL_ID_PARAMS_FORMAT }
         @url_params = @params
         @url_params["access_token"] = client.token.value
@@ -51,7 +45,7 @@ module Teachbase
           end
         end
 
-        url_objects.each {|object| object.gsub!(/-/,SPLIT_SYMBOL) }
+        url_objects.each { |object| object.gsub!(/-/, SPLIT_SYMBOL) }
 
         if @source_method == @object_method
           url_objects.unshift(host).join("/")
@@ -63,17 +57,17 @@ module Teachbase
       def find_endpoint(method_name)
         @object_method = @method_name = method_name.split(SPLIT_SYMBOL)
         @source_method = @method_name.size == 1 ? @method_name.join(SPLIT_SYMBOL) : @method_name.shift
-        @source_method.gsub!(/-/,SPLIT_SYMBOL)
-        raise "'#{@source_method}' no such endpoint" unless self.class.endpoints.key?(@source_method)
+        @source_method.gsub!(/-/, SPLIT_SYMBOL)
+        raise "'#{@source_method}' no such endpoint" unless Teachbase::API::Endpoints::LIST.key?(@source_method)
 
-        self.class.endpoints[@source_method]
+        Teachbase::API::Endpoints::LIST[@source_method]
       end
 
       def send_request
-        #client.token.token_request
         endpoint_class = find_endpoint(method_name)
+        source_endpoint = "Teachbase::API::Endpoints::#{get_endpoint_version}::#{endpoint_class}".constantize
         @request_url = create_request_url
-        endpoint = endpoint_class.new(self)
+        endpoint = source_endpoint.new(self)
         raise "No method '#{@object_method}' in '#{method_name}'" unless endpoint.respond_to? @object_method
 
         endpoint.public_send(@object_method)

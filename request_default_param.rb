@@ -1,4 +1,4 @@
-require './lib/request'
+require './lib/tbclient/request'
 
 module RequestDefaultParam
   def self.included(base)

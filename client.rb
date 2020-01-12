@@ -1,24 +1,12 @@
-require './lib/token'
-require './lib/request'
 require './lib/app_configurator'
-
-require "json"
-require "rest-client"
+require './lib/tbclient/token'
+require './lib/tbclient/endpoints/endpoints_version.rb'
+require './lib/tbclient/request'
 
 module Teachbase
   module API
     class Client
-
-      class << self
-        attr_reader :versions
-      end
-
-      @versions = { endpoint_v1: "https://go.teachbase.ru/endpoint/v1",
-                    mobile_v1: "https://go.teachbase.ru/mobile/v1",
-                    mobile_v2: "https://go.teachbase.ru/mobile/v2" }.freeze
-
-      attr_reader :token, :api_version
-      attr_accessor :accountid
+      attr_reader :token, :api_version, :accountid
 
       def initialize(version, oauth_params = {})
         config = AppConfigurator.new
@@ -35,7 +23,7 @@ module Teachbase
       end
 
       def request(method_name, params = {})
-        request = Request.new(method_name, params, self)
+        request = Teachbase::API::Request.new(method_name, params, self)
       end
 
       protected
@@ -45,10 +33,10 @@ module Teachbase
       end
 
       def choose_version(version)
-        if !self.class.versions.key?(version.to_sym)
-          raise "API version '#{version}' not exists.\nAvaliable: #{self.class.versions.keys}"
+        if Teachbase::API::Endpoints::VERSIONS.key?(version.to_sym)
+          Teachbase::API::Endpoints::VERSIONS[version.to_sym]
         else
-          self.class.versions[version.to_sym]
+          raise "API version '#{version}' not exists.\nAvaliable: #{Teachbase::API::Endpoints::VERSIONS.keys}"
         end
       end
     end
