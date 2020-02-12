@@ -13,7 +13,7 @@ module Teachbase
       def initialize(version, oauth_params = {})
         config = AppConfigurator.new
         @api_version = choose_version(version)
-        @account_id ||= config.get_api_accountid
+        @account_id = oauth_params[:account_id] || config.get_api_accountid
         oauth_params[:client_id] ||= config.get_api_client_id
         oauth_params[:client_secret] ||= config.get_api_client_secret
         oauth_params[:token_time_limit] ||= Teachbase::API::Token::TOKEN_TIME_LIMIT
