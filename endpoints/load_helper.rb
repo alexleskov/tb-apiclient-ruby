@@ -25,7 +25,7 @@ module Teachbase
           end
         end
       end
-      
+
       def request_has_ids?(ids_count)
         raise "Must set 'ids_count' if using mode ':with_ids" unless ids_count
         raise "Must have '#{ids_count} id' for '#{request.method_name}' method" unless request.url_ids.size == ids_count

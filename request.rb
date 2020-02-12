@@ -79,10 +79,10 @@ module Teachbase
 
       def get_request_params
         return @request_params.merge!(@params) unless url_ids
-        
-        other_params = url_ids.each do |key, value|
-                        @params.delete(key)
-                      end
+
+        other_params = url_ids.each do |key, _value|
+          @params.delete(key)
+        end
         @request_params.merge!(other_params)
       end
 
@@ -90,7 +90,7 @@ module Teachbase
         host = client.api_version
         path = method_name_to_array
         path_url = if @url_ids.nil?
-                      path.join("/")
+                     path.join("/")
                    else
                      path_with_ids = []
                      path.each_with_index do |item, ind|
