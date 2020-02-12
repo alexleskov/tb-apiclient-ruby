@@ -4,7 +4,7 @@ require "rest-client"
 module Teachbase
   module API
     class Token
-      TOKEN_TIME_LIMIT = 7200 # TODO: Save "expires_in" in database and remove this const
+      TOKEN_TIME_LIMIT = 7200
 
       class << self
         attr_reader :versions
@@ -24,21 +24,16 @@ module Teachbase
       end
 
       def load_token
-        if @oauth_params[:access_token]
-          @value = @oauth_params[:access_token].to_s
-        else
-          @value = token_request["access_token"]
-          raise "API token '#{value}' is null" if value.nil?
-        end
+        @value = token_request
+        raise "API token '#{value}' not loaded" unless value
       end
 
       def token_request
-        payload = create_payload
-        r = RestClient.post("https://go.teachbase.ru/oauth/token", payload.to_json,
+        r = RestClient.post("#{Teachbase::API::Client::LMS_HOST}/oauth/token", create_payload.to_json,
                             content_type: :json)
-        @access_token_response = JSON.parse(r.body)
-        @expired_at = access_token_expired_at
-        @access_token_response
+        raw_token_response = JSON.parse(r.body)
+        @expired_at = access_token_expired_at(raw_token_response)
+        raw_token_response["access_token"]
       rescue RestClient::ExceptionWithResponse => e
         case e.http_code
         when 301, 302, 307
@@ -55,7 +50,7 @@ module Teachbase
       end
 
       def oauth_mobile_param?
-        !([@oauth_params[:user_email], @oauth_params[:password]].any? { |key| key.nil? || key.empty? })
+        !([@oauth_params[:user_login], @oauth_params[:password]].any? { |key| key.nil? || key.empty? })
       end
 
       def create_payload
@@ -63,7 +58,7 @@ module Teachbase
                     "client_secret" => @oauth_params[:client_secret],
                     "grant_type" => grant_type }
         if mobile_version? && oauth_mobile_param?
-          payload.merge!("username" => @oauth_params[:user_email],
+          payload.merge!("username" => @oauth_params[:user_login],
                          "password" => @oauth_params[:password])
         elsif mobile_version? && !oauth_mobile_param?
           raise "Not correct oauth params for Mobile API version token request."
@@ -71,10 +66,11 @@ module Teachbase
         payload
       end
 
-      def access_token_expired_at
-        token_created_at = Time.at(@access_token_response["created_at"]).utc
-        expires_in = @access_token_response["expires_in"]
-        expired_at = token_created_at + TOKEN_TIME_LIMIT # TODO: Save "expires_in" in database and replace this const on it
+      def access_token_expired_at(raw_token_response)
+        token_limit = @oauth_params[:token_time_limit]
+        raise "Token time limit = '#{token_limit}'. It can't be < 0." if token_limit < 0
+
+        Time.at(raw_token_response["created_at"]).utc + token_limit
       end
     end
   end

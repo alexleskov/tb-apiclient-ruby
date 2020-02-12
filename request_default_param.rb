@@ -1,4 +1,4 @@
-require './lib/tbclient/request'
+require './request'
 
 module RequestDefaultParam
   def self.included(base)
@@ -22,7 +22,7 @@ module RequestDefaultParam
     return if parameters.empty?
 
     parameters.each_key do |parametr|
-      request.url_params[parametr] = parameters[parametr] unless request.url_params.key?(parametr)
+      request.request_params[parametr] = parameters[parametr] unless request.request_params.key?(parametr)
     end
   end
 end

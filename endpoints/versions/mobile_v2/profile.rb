@@ -1,13 +1,14 @@
 require "json"
 require "rest-client"
-require './lib/tbclient/request_default_param'
+require './request_default_param'
 
 module Teachbase
   module API
-    module Endpoints
+    module EndpointsVersion
       module MobileV2
         class Profile
           include RequestDefaultParam
+          include Teachbase::API::LoadHelper
 
           attr_reader :request, :answer
 
@@ -19,17 +20,7 @@ module Teachbase
           end
 
           def profile
-            r = RestClient.get request.request_url, params: request.url_params,
-                                                    "X-Account-Id" => request.url_params[:accountid].to_s ||= ""
-            @answer = JSON.parse(r.body)
-            request.receive_response(self)
-          rescue RestClient::ExceptionWithResponse => e
-            case e.http_code
-            when 301, 302, 307
-              e.response.follow_redirection
-            else
-              raise
-            end
+            send_request {}
           end
         end
       end

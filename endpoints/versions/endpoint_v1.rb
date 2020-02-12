@@ -1,6 +1,8 @@
+require './endpoints/versions/endpoint_v1/user'
+
 module Teachbase
   module API
-    module Endpoints
+    module EndpointsVersion
       module EndpointV1; end
     end
   end

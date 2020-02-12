@@ -1,6 +1,6 @@
 module Teachbase
   module API
-    module Endpoints
+    module EndpointsVersion
       module MobileV1; end
     end
   end

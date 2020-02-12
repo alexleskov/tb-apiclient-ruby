@@ -1,14 +1,16 @@
-require './lib/tbclient/endpoints/versions/endpoint_v1'
-require './lib/tbclient/endpoints/versions/mobile_v1'
-require './lib/tbclient/endpoints/versions/mobile_v2'
+require './endpoints/load_helper'
+require './client'
+require './endpoints/versions/endpoint_v1'
+require './endpoints/versions/mobile_v1'
+require './endpoints/versions/mobile_v2'
 
 module Teachbase
   module API
-    module Endpoints
-      VERSIONS = { endpoint_v1: "https://go.teachbase.ru/endpoint/v1",
-                   mobile_v1: "https://go.teachbase.ru/mobile/v1",
-                   mobile_v2: "https://go.teachbase.ru/mobile/v2" }.freeze
-      LIST = { "users" => "User", "profile" => "Profile", "course_sessions" => "CourseSession" }.freeze # TODO: "clickmeeting-meetings" => "ClickmeetingMeeting"
+    module EndpointsVersion
+      VERSIONS = { endpoint_v1: "#{Teachbase::API::Client::LMS_HOST}/endpoint/v1/",
+                   mobile_v1: "#{Teachbase::API::Client::LMS_HOST}/mobile/v1/",
+                   mobile_v2: "#{Teachbase::API::Client::LMS_HOST}/mobile/v2/" }.freeze
+      LIST = { "users" => "User", "profile" => "Profile", "course-sessions" => "CourseSession" }.freeze # TODO: "clickmeeting-meetings" => "ClickmeetingMeeting"
     end
   end
 end

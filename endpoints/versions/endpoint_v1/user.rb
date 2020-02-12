@@ -5,8 +5,8 @@ require './request_default_param'
 module Teachbase
   module API
     module EndpointsVersion
-      module MobileV2
-        class CourseSession
+      module EndpointV1
+        class User
           include RequestDefaultParam
           include Teachbase::API::LoadHelper
 
@@ -18,14 +18,9 @@ module Teachbase
             @request = request
           end
 
-          def course_sessions
-            send_request do
+          def sections
+            send_request :with_ids, ids_count: 1 do
               check_and_apply_default_req_params
-            end
-          end
-
-          def materials
-            send_request :with_ids, ids_count: 2 do
             end
           end
         end
