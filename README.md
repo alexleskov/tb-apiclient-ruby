@@ -38,11 +38,13 @@ Avaliable options for Client:
 ```
 
 Or you can set 'client_id', 'client_secret', 'account_id' in config/secrets.yml
+
 'token_time_limit' = 7200 seconds
 
 ### Sending Request
 
-Note: Replace `_` on `-` in method name.
+Note: Replace `_` on `-` in method with name like: "course_session", "notification_settings" and etc. Beacause `_` - default delimiter for methods.
+
 Examples:
 
 ```ruby
@@ -86,4 +88,5 @@ api.response.answer.object #return object with methods
 ```
 
 ## Available methods
-In progess. Look for available methods in 'endpoints' folder.
+
+Looking for available methods in 'endpoints/versions' folder.
