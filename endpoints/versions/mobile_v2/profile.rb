@@ -8,19 +8,22 @@ module Teachbase
       module MobileV2
         class Profile
           include RequestDefaultParam
+          include Teachbase::API::LoadChecker
           include Teachbase::API::LoadHelper
-
-          attr_reader :request, :answer
 
           def initialize(request)
             raise "'#{request}' must be 'Teachbase::API::Request'" unless request.is_a?(Teachbase::API::Request)
 
             @request = request
-            # self.class.default_request_params
           end
 
           def profile
-            send_request {}
+            send_request
+          end
+
+          def notification_settings
+            check :method
+            send_request method: request.http_method
           end
         end
       end

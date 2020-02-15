@@ -13,8 +13,6 @@ Endpoint v1:
 Teachbase::API::Client.new :endpoint_v1, client_id: "", client_secret: ""
 ```
 
-Or you can set client_id and client_secret in config/secrets.yml
-
 Mobile v1:
 
 ```ruby
@@ -31,13 +29,21 @@ On mobile API user_login it's email or phone number.
 For success authorization in Teachbase API if you are using mobile endpoints must have set up 'account_id':
 
 ```ruby
-Teachbase::API::Client.new :mobile_v2, account_id: "", user_login: "", password: ""
+Teachbase::API::Client.new :mobile_v2, user_login: "", password: "", account_id: ""
 ```
 
-It can be setted in config/secrets.yml or on request sending params.
+Avaliable options for Client:
+```ruby
+:client_id, :client_secret, :account_id, :token_time_limit
+```
 
+Or you can set 'client_id', 'client_secret', 'account_id' in config/secrets.yml
+'token_time_limit' = 7200 seconds
 
 ### Sending Request
+
+Note: Replace `_` on `-` in method name.
+Examples:
 
 ```ruby
 api = Teachbase::API::Client.new :endpoint_v1, client_id: "", client_secret: ""
@@ -51,12 +57,23 @@ api.request "course-sessions_materials", cs_id:111, m_id:222
 
 # where 'course-sessions_materials' is /course_sessions/{session_id}/materials/{id}, and 'cs_id:111' is session_id, m_id:222 is material's id
 # https://go.teachbase.ru/api-docs/index.html?urls.primaryName=Mobile#/materials/get_course_sessions__session_id__materials__id_
+
+api = Teachbase::API::Client.new :mobile_v2, account_id: "", user_login: "", password: ""
+api.request "profile_notification-settings", method: :get # for get http method
+api.request "profile_notification-settings", body: {"courses": true, "news": true, "tasks": true,
+                                                    "quizzes": true, "programs": true, "webinars": false},
+                                             method: :patch #for patch http method
+
+# where 'profile_notification-settings' is /profile/notification_settings
+# https://go.teachbase.ru/api-docs/index.html?urls.primaryName=Mobile#/notification%20settings/get_profile_notification_settings
+# https://go.teachbase.ru/api-docs/index.html?urls.primaryName=Mobile#/notification%20settings/patch_profile_notification_settings
 ```
+
 See more about other methods in API docs: https://go.teachbase.ru/api-docs/
 
-Every Request has several params:
+Every Request can has several params:
 ```ruby
-:response, :client, :method_name, :request_url, :request_params, :url_ids, :account_id
+:response, :client, :method_name, :request_url, :request_params, :url_ids, :account_id, :http_method, :payload
 ```
 
 ### Getting Response
@@ -64,7 +81,8 @@ Every Request has several params:
 ```ruby
 api = Teachbase::API::Client.new :endpoint_v1, client_id: "", client_secret: ""
 api.request "users_sections", id:666
-api.response #api.response.answer - return only json
+api.response.answer.raw #return json
+api.response.answer.object #return object with methods
 ```
 
 ## Available methods

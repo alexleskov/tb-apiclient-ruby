@@ -29,8 +29,8 @@ module Teachbase
       end
 
       def token_request
-        r = RestClient.post("#{Teachbase::API::Client::LMS_HOST}/oauth/token", create_payload.to_json,
-                            content_type: :json)
+        r = RestClient.post "#{Teachbase::API::Client::LMS_HOST}/oauth/token", create_payload.to_json,
+                            content_type: :json
         raw_token_response = JSON.parse(r.body)
         @expired_at = access_token_expired_at(raw_token_response)
         raw_token_response["access_token"]

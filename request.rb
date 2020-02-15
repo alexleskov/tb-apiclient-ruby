@@ -4,13 +4,23 @@ module Teachbase
       SPLIT_SYMBOL = "_".freeze
       URL_ID_PARAMS_FORMAT = /(^id|_id$)/.freeze
 
-      attr_reader :response, :client, :method_name, :request_url, :request_params, :url_ids, :account_id
+      attr_reader :response,
+                  :client,
+                  :method_name,
+                  :request_url,
+                  :request_params,
+                  :url_ids,
+                  :account_id,
+                  :http_method,
+                  :payload
 
       def initialize(method_name, params = {}, client)
         @method_name = method_name.to_s
         @method_array = method_name_to_array
         @client = client
         @params = params
+        @http_method = params[:method] || :get
+        @payload = params[:body]
         @request_params = {}
         create_request_data
       end
@@ -23,7 +33,7 @@ module Teachbase
 
       def create_request_data
         @endpoint_class = find_endpoint_class
-        endpoint_method = find_endpoint_method
+        endpoint_method = change_split_symbol(find_endpoint_method, /-/, SPLIT_SYMBOL)
 
         endpoint = Kernel.const_get("Teachbase::API::EndpointsVersion::#{get_endpoint_version}::#{@endpoint_class}").new(self)
         raise "No instane method '#{endpoint_method}' in '#{endpoint}'" unless endpoint.respond_to? endpoint_method
@@ -78,12 +88,13 @@ module Teachbase
       end
 
       def get_request_params
-        return @request_params.merge!(@params) unless url_ids
+        sanitize_not_request_params(@params)
+        url_ids.each { |key, _value| @params.delete(key) } if url_ids
+        @request_params.merge!(@params)
+      end
 
-        other_params = url_ids.each do |key, _value|
-          @params.delete(key)
-        end
-        @request_params.merge!(other_params)
+      def sanitize_not_request_params(req_params)
+        [:method, :body].each { |option| req_params.delete(option) }
       end
 
       def create_request_url

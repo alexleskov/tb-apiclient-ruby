@@ -5,7 +5,7 @@ require './request_default_param'
 module Teachbase
   module API
     module EndpointsVersion
-      module EndpointV1
+      module MobileV2
         class User
           include RequestDefaultParam
           include Teachbase::API::LoadChecker
@@ -17,10 +17,25 @@ module Teachbase
             @request = request
           end
 
-          def sections
+          def notifications
+            check :method
             check_and_apply_default_req_params
+            send_request method: request.http_method
+          end
+
+          def notifications_count
+            send_request
+          end
+
+          def notifications_read
             send_request :with_ids, ids_count: 1
           end
+
+          def push_token
+            check :method
+            send_request method: request.http_method
+          end
+
         end
       end
     end
