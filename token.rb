@@ -68,7 +68,7 @@ module Teachbase
 
       def access_token_expired_at(raw_token_response)
         token_limit = @oauth_params[:token_time_limit]
-        raise "Token time limit = '#{token_limit}'. It can't be < 0." if token_limit < 0
+        raise "Token time limit = '#{token_limit}'. It can't be < 0." if token_limit.negative?
 
         Time.at(raw_token_response["created_at"]).utc + token_limit
       end

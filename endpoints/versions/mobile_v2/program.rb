@@ -26,7 +26,6 @@ module Teachbase
           def content
             send_request :with_ids, ids_count: 1
           end
-
         end
       end
     end

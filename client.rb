@@ -26,7 +26,7 @@ module Teachbase
       end
 
       def request(method_name, params = {})
-        Teachbase::API::Request.new(method_name, params, self)
+        Teachbase::API::Request.new(method_name, self, params)
       end
 
       protected
@@ -40,9 +40,7 @@ module Teachbase
       end
 
       def choose_version(version)
-        if api_version_exists?(version)
-          Teachbase::API::EndpointsVersion::VERSIONS[version.to_sym]
-        else
+        unless api_version_exists?(version)
           raise "API version '#{version}' not exists.\nAvaliable: #{Teachbase::API::EndpointsVersion::VERSIONS.keys}"
         end
       end

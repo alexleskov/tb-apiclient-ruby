@@ -35,7 +35,6 @@ module Teachbase
             check :method
             send_request method: request.http_method
           end
-
         end
       end
     end

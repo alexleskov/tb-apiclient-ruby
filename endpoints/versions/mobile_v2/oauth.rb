@@ -20,7 +20,6 @@ module Teachbase
           def oauth
             send_request method: :post
           end
-
         end
       end
     end

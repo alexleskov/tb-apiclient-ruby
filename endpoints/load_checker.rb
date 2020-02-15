@@ -9,7 +9,7 @@ module Teachbase
 
       def check(param = :easy_mode, *args)
         raise "Can't find arguments for checking: #{args}" unless args
-        
+
         result = []
         args.each do |arg|
           result << find_checker(arg.to_sym)
@@ -20,7 +20,6 @@ module Teachbase
         when :strong_mode
           raise "Must set all of '#{args}' param for this API method" if result.any?(false)
         end
-
       end
 
       private
@@ -32,7 +31,7 @@ module Teachbase
         when :filter
           request.request_params.keys.include?(:filter)
         when :method
-          [:post, :delete, :get, :patch].include?(request.http_method)
+          %i[post delete get patch].include?(request.http_method)
         else
           raise "Don't know such argument for checking: #{arg}"
         end

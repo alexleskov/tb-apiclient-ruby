@@ -24,7 +24,6 @@ module Teachbase
           def revoke
             send_request method: :post
           end
-
         end
       end
     end

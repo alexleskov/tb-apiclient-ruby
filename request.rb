@@ -14,7 +14,7 @@ module Teachbase
                   :http_method,
                   :payload
 
-      def initialize(method_name, params = {}, client)
+      def initialize(method_name, client params = {})
         @method_name = method_name.to_s
         @method_array = method_name_to_array
         @client = client
@@ -35,18 +35,18 @@ module Teachbase
         @endpoint_class = find_endpoint_class
         endpoint_method = change_split_symbol(find_endpoint_method, /-/, SPLIT_SYMBOL)
 
-        endpoint = Kernel.const_get("Teachbase::API::EndpointsVersion::#{get_endpoint_version}::#{@endpoint_class}").new(self)
+        endpoint = Kernel.const_get("Teachbase::API::EndpointsVersion::#{fetch_endpoint_version}::#{@endpoint_class}").new(self)
         raise "No instane method '#{endpoint_method}' in '#{endpoint}'" unless endpoint.respond_to? endpoint_method
 
-        get_request_headers
-        @url_ids = get_ids_for_url
-        @request_params = get_request_params
+        fetch_request_headers
+        @url_ids = fetch_ids_for_url
+        @request_params = fetch_request_params
         @request_params["access_token"] = client.token.value
         @request_url = create_request_url
         endpoint.public_send(endpoint_method)
       end
 
-      def get_endpoint_version
+      def fetch_endpoint_version
         client.token.version.to_s.split(SPLIT_SYMBOL).collect(&:capitalize).join
       end
 
@@ -76,25 +76,25 @@ module Teachbase
         change_split_symbol(method_name, /-/, SPLIT_SYMBOL)
       end
 
-      def get_ids_for_url
+      def fetch_ids_for_url
         return if @params.empty?
 
         url_ids = @params.select { |param| param =~ URL_ID_PARAMS_FORMAT && param != :account_id }
         url_ids.empty? ? nil : url_ids
       end
 
-      def get_request_headers
+      def fetch_request_headers
         @account_id = @params[:account_id] || client.account_id
       end
 
-      def get_request_params
+      def fetch_request_params
         sanitize_not_request_params(@params)
-        url_ids.each { |key, _value| @params.delete(key) } if url_ids
+        url_ids&.each { |key, _value| @params.delete(key) }
         @request_params.merge!(@params)
       end
 
       def sanitize_not_request_params(req_params)
-        [:method, :body].each { |option| req_params.delete(option) }
+        %i[method body].each { |option| req_params.delete(option) }
       end
 
       def create_request_url

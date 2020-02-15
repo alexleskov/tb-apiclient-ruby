@@ -12,7 +12,6 @@ module Teachbase
                    mobile_v1: "#{Teachbase::API::Client::LMS_HOST}/mobile/v1/",
                    mobile_v2: "#{Teachbase::API::Client::LMS_HOST}/mobile/v2/" }.freeze
       LIST = { "users" => "User",
-               "profile" => "Profile",
                "course-sessions" => "CourseSession",
                "documents" => "Document",
                "news" => "New",
@@ -22,7 +21,7 @@ module Teachbase
                "user-accounts" => "UserAccount",
                "programs" => "Program",
                "tokens" => "Token",
-               "user-activity" => "UserActivity"}.freeze # TODO: "clickmeeting-meetings" => "ClickmeetingMeeting"
+               "user-activity" => "UserActivity" }.freeze # TODO: "clickmeeting-meetings" => "ClickmeetingMeeting"
     end
   end
 end

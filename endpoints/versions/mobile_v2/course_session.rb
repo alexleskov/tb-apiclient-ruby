@@ -70,7 +70,6 @@ module Teachbase
           def tasks
             send_request :with_ids, ids_count: 2
           end
-
         end
       end
     end
