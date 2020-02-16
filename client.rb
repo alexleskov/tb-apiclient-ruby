@@ -1,6 +1,5 @@
 require './lib/app_configurator'
 require './token'
-require './endpoints/endpoints_version'
 require './request'
 
 module Teachbase

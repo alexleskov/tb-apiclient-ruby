@@ -14,7 +14,7 @@ module Teachbase
                   :http_method,
                   :payload
 
-      def initialize(method_name, client params = {})
+      def initialize(method_name, client, params = {})
         @method_name = method_name.to_s
         @method_array = method_name_to_array
         @client = client
