@@ -24,8 +24,12 @@ module Teachbase
       end
 
       def load_token
-        @value = token_request
-        raise "API token '#{value}' not loaded" unless value
+        if @oauth_params[:access_token]
+          @value = @oauth_params[:access_token].to_s
+        else
+          @value = token_request
+          raise "API token '#{value}' is null" if value.nil?
+        end
       end
 
       def token_request

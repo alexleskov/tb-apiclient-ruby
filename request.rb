@@ -1,3 +1,5 @@
+require './endpoints/endpoints_version'
+
 module Teachbase
   module API
     class Request
@@ -36,7 +38,7 @@ module Teachbase
         endpoint_method = change_split_symbol(find_endpoint_method, /-/, SPLIT_SYMBOL)
 
         endpoint = Kernel.const_get("Teachbase::API::EndpointsVersion::#{fetch_endpoint_version}::#{@endpoint_class}").new(self)
-        raise "No instane method '#{endpoint_method}' in '#{endpoint}'" unless endpoint.respond_to? endpoint_method
+        raise "No instance method '#{endpoint_method}' in '#{endpoint}'" unless endpoint.respond_to? endpoint_method
 
         fetch_request_headers
         @url_ids = fetch_ids_for_url
@@ -100,6 +102,8 @@ module Teachbase
       def create_request_url
         host = client.api_version
         path = method_name_to_array
+        raise "Can't find host and path url" if [host, path].any?(nil)
+
         path_url = if @url_ids.nil?
                      path.join("/")
                    else

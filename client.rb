@@ -6,6 +6,9 @@ module Teachbase
   module API
     class Client
       LMS_HOST = "https://go.teachbase.ru".freeze
+      VERSIONS = { endpoint_v1: "#{LMS_HOST}/endpoint/v1/",
+                   mobile_v1: "#{LMS_HOST}/mobile/v1/",
+                   mobile_v2: "#{LMS_HOST}/mobile/v2/" }.freeze
 
       attr_reader :token, :api_version, :account_id
 
@@ -35,12 +38,14 @@ module Teachbase
       end
 
       def api_version_exists?(version)
-        Teachbase::API::EndpointsVersion::VERSIONS.key?(version.to_sym)
+       VERSIONS.key?(version.to_sym)
       end
 
       def choose_version(version)
-        unless api_version_exists?(version)
-          raise "API version '#{version}' not exists.\nAvaliable: #{Teachbase::API::EndpointsVersion::VERSIONS.keys}"
+        if api_version_exists?(version)
+          VERSIONS[version.to_sym]
+        else
+          raise "API version '#{version}' not exists.\nAvaliable: #{VERSIONS.keys}"
         end
       end
     end

@@ -8,9 +8,6 @@ require './endpoints/versions/mobile_v2'
 module Teachbase
   module API
     module EndpointsVersion
-      VERSIONS = { endpoint_v1: "#{Teachbase::API::Client::LMS_HOST}/endpoint/v1/",
-                   mobile_v1: "#{Teachbase::API::Client::LMS_HOST}/mobile/v1/",
-                   mobile_v2: "#{Teachbase::API::Client::LMS_HOST}/mobile/v2/" }.freeze
       LIST = { "users" => "User",
                "course-sessions" => "CourseSession",
                "documents" => "Document",
