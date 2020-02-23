@@ -1,13 +1,30 @@
 class AppConfigurator
-  def get_api_client_id
-    YAML.safe_load(IO.read('config/secrets.yml'))['api_client_id']
+
+  def initialize
+    @load_config_file = IO.read('config/secrets.yml')
   end
 
-  def get_api_client_secret
-    YAML.safe_load(IO.read('config/secrets.yml'))['api_client_secret']
+  def rest_client
+    YAML.safe_load(@load_config_file)['rest_client']
   end
 
-  def get_api_accountid
-    YAML.safe_load(IO.read('config/secrets.yml'))['api_accountid']
+  def lms_host
+    YAML.safe_load(@load_config_file)['lms_host']
+  end
+
+  def client_id
+    YAML.safe_load(@load_config_file)['api_client_id']
+  end
+
+  def client_secret
+    YAML.safe_load(@load_config_file)['api_client_secret']
+  end
+
+  def account_id
+    YAML.safe_load(@load_config_file)['api_account_id']
+  end
+
+  def token_expiration_time
+    YAML.safe_load(@load_config_file)['token_expiration_time']
   end
 end

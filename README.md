@@ -1,92 +1,135 @@
 # tb-apiclient-ruby
+
 API client for Teachbase LMS
 
+
 ## Usage
-Avaliable endpoints for usage: 
-`endpoint_v1, mobile_v1, mobile_v2`
+
+Avaliable APIs and versions for usage: 
+`endpoint: v1
+ mobile: v1, v2`
+
 
 ### Running the client
+
+Avaliable options for Client:
+
+* API type: `:endpoint` or `:mobile`
+* API version: `1` or `2`
+
+Other params:
+```ruby
+:client_id, :client_secret, :user_login, :password, :account_id, :token_expiration_time, :rest_client, :lms_host
+```
+
+`client_id`, `client_secret`, `account_id`, `token_expiration_time`, `rest_client`, `lms_host` can be setted in config/secrets.yml
+
+Default `token_time_limit` = 7200 seconds.
+
+
+#### Examples
 
 Endpoint v1:
 
 ```ruby
-Teachbase::API::Client.new :endpoint_v1, client_id: "", client_secret: ""
+Teachbase::API::Client.new(:endpoint, 1, client_id: "", client_secret: "")
 ```
 
 Mobile v1:
 
 ```ruby
-Teachbase::API::Client.new :mobile_v1, user_login: "", password: ""
+Teachbase::API::Client.new(:mobile, 1, client_id: "", client_secret: "", user_login: "", password: "")
 ```
 
 Mobile v2:
 
 ```ruby
-Teachbase::API::Client.new :mobile_v2, user_login: "", password: ""
+Teachbase::API::Client.new(:mobile, 2, client_id: "", client_secret: "", user_login: "", password: "")
 ```
 
-On mobile API user_login it's email or phone number.
-For success authorization in Teachbase API if you are using mobile endpoints must have set up 'account_id':
+On mobile API `user_login` is email or phone number.
+For success authorization in `mobile` Teachbase API must have set up `account_id`:
 
 ```ruby
-Teachbase::API::Client.new :mobile_v2, user_login: "", password: "", account_id: ""
+Teachbase::API::Client.new(:mobile, 2, client_id: "", client_secret: "", user_login: "", password: "", account_id: "")
 ```
 
-Avaliable options for Client:
+
+### Creating and sending the request
+
+Requests can sended with: `get`, `post`, `patch`, `delete` http methods.
+
+Avaliable options for Request:
+
+* Method class
+* Method path
+
+Other params:
 ```ruby
-:client_id, :client_secret, :account_id, :token_time_limit
+:answer_type (:raw, :json, :object), :payload
 ```
 
-Or you can set 'client_id', 'client_secret', 'account_id' in config/secrets.yml
+Default answer type is `:json`
+Default payload type is `:json`
 
-'token_time_limit' = 7200 seconds
 
-### Sending Request
+#### Examples
 
-Note: Replace `_` on `-` in method with name like: "course_session", "notification_settings" and etc. Beacause `_` - default delimiter for methods.
+1. Running the client:
+```ruby
+api = Teachbase::API::Client.new(:mobile, 2, client_id: "", client_secret: "", user_login: "", password: "")
+```
 
-Examples:
+2. Creating the request
+`api.request(<method_class>, <method_path>, <options>)`
 
 ```ruby
-api = Teachbase::API::Client.new :endpoint_v1, client_id: "", client_secret: ""
-api.request "users_sections", id:666
+request = client.request(:notification_settings, :profile_notification_settings)
+```
 
-# where 'users_sections' is users/{user_id}/sections, and 'id:666' is user id
-# https://go.teachbase.ru/api-docs/index.html#/competences/get_users__id__sections
+For `patch` or `post` methods must have set up `payload`.
 
-api = Teachbase::API::Client.new :mobile_v2, account_id: "", user_login: "", password: ""
-api.request "course-sessions_materials", cs_id:111, m_id:222
+```ruby
+payload = { "courses": true, "news": true, "tasks": true, "quizzes": true, "programs": true, "webinars": true }
+request = client.request(:notification_settings, :profile_notification_settings, payload: payload, answer_type: :raw)
+```
 
-# where 'course-sessions_materials' is /course_sessions/{session_id}/materials/{id}, and 'cs_id:111' is session_id, m_id:222 is material's id
+3. Sending the request
+`request.post / request.get / request.patch / request.delete`
+
+
+### More examples
+
+```ruby
+api = Teachbase::API::Client.new(:mobile, 2, client_id: "", client_secret: "", user_login: "", password: "")
+
+api.request(:materials, :course_sessions_materials, session_id: 111, id: 222).get
+# GET /course_sessions/{session_id}/materials/{id}
 # https://go.teachbase.ru/api-docs/index.html?urls.primaryName=Mobile#/materials/get_course_sessions__session_id__materials__id_
 
-api = Teachbase::API::Client.new :mobile_v2, account_id: "", user_login: "", password: ""
-api.request "profile_notification-settings", method: :get # for get http method
-api.request "profile_notification-settings", body: {"courses": true, "news": true, "tasks": true,
-                                                    "quizzes": true, "programs": true, "webinars": false},
-                                             method: :patch #for patch http method
+api.request(:course_sessions, :course_sessions, filter: :active, page: 1, per_page: 100).get
+# /course_sessions
+# https://go.teachbase.ru/api-docs/index.html?urls.primaryName=Mobile#/
 
-# where 'profile_notification-settings' is /profile/notification_settings
-# https://go.teachbase.ru/api-docs/index.html?urls.primaryName=Mobile#/notification%20settings/get_profile_notification_settings
-# https://go.teachbase.ru/api-docs/index.html?urls.primaryName=Mobile#/notification%20settings/patch_profile_notification_settings
+api.request(:quizzes, :course_sessions_quizzes_start, course_session_id: 111, id: 222).post
+
+# POST /course_sessions/{course_session_id}/quizzes/{id}/start
+# https://go.teachbase.ru/api-docs/index.html?urls.primaryName=Mobile#/quizzes/post_course_sessions__course_session_id__quizzes__id__start
 ```
 
 See more about other methods in API docs: https://go.teachbase.ru/api-docs/
 
-Every Request can has several params:
-```ruby
-:response, :client, :method_name, :request_url, :request_params, :url_ids, :account_id, :http_method, :payload
-```
-
-### Getting Response
-
-```ruby
-api = Teachbase::API::Client.new :endpoint_v1, client_id: "", client_secret: ""
-api.request "users_sections", id:666
-api.response.answer.raw #return json
-api.response.answer.object #return object with methods
-```
 
 ## Available methods
 
-Looking for available methods in 'endpoints/versions' folder.
+Looking for available methods in 'api_types/versions' folder.
+
+
+## Extra
+
+If you want to get response's headers:
+```ruby
+api = Teachbase::API::Client.new(:mobile, 2, client_id: "", client_secret: "", user_login: "", password: "")
+response = api.request(:course_sessions, :course_sessions, filter: :active, page: 1, per_page: 100, answer_type: :raw).get # get raw response
+response.headers
+```
