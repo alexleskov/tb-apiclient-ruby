@@ -5,7 +5,7 @@ module Teachbase
     module Types
       module Endpoint
         module V1
-          VERSION_PATH = "/endpoint/v1/"
+          VERSION_PATH = "/endpoint/v1/".freeze
         end
       end
     end

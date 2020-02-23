@@ -5,7 +5,7 @@ module Teachbase
     module Types
       module Mobile
         module V2
-          VERSION_PATH = "/mobile/v2/"
+          VERSION_PATH = "/mobile/v2/".freeze
         end
       end
     end

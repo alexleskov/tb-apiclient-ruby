@@ -21,7 +21,6 @@ module Teachbase
             def user_accounts
               "user_accounts"
             end
-
           end
         end
       end

@@ -4,7 +4,7 @@ module Teachbase
       module Mobile
         module V2
           class Programs
-            SOURCE = "programs"
+            SOURCE = "programs".freeze
 
             include Teachbase::API::ParamChecker
             include Teachbase::API::MethodCaller
@@ -22,7 +22,7 @@ module Teachbase
                 "#{SOURCE}/#{url_ids[:id]}"
               else
                 check!(:options, [:filter], request_options)
-                "#{SOURCE}"
+                SOURCE.to_s
               end
             end
 
@@ -30,7 +30,6 @@ module Teachbase
               check!(:ids, [:id], url_ids)
               "#{programs}/content"
             end
-
           end
         end
       end

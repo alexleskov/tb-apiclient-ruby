@@ -4,7 +4,7 @@ module Teachbase
       module Mobile
         module V2
           class NotificationSettings
-            SOURCE = "profile"
+            SOURCE = "profile".freeze
 
             include Teachbase::API::ParamChecker
             include Teachbase::API::MethodCaller
@@ -19,7 +19,6 @@ module Teachbase
             def profile_notification_settings
               "#{SOURCE}/notification_settings"
             end
-
           end
         end
       end

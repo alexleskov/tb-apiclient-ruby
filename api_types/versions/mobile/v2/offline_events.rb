@@ -4,7 +4,7 @@ module Teachbase
       module Mobile
         module V2
           class OfflineEvents
-            SOURCE = "offline_events"
+            SOURCE = "offline_events".freeze
 
             include Teachbase::API::ParamChecker
             include Teachbase::API::MethodCaller
@@ -22,10 +22,9 @@ module Teachbase
                 "#{SOURCE}/#{url_ids[:id]}"
               else
                 check!(:options, [:filter], request_options)
-                "#{SOURCE}"
+                SOURCE.to_s
               end
             end
-
           end
         end
       end

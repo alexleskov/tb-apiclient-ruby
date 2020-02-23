@@ -1,7 +1,6 @@
 module Teachbase
   module API
     module ParamChecker
-
       def self.included(base)
         base.extend ClassMethods
       end
@@ -22,7 +21,7 @@ module Teachbase
         end
 
         @lost_params = []
-        check_data.each do |key, value|
+        check_data.each do |key, _value|
           @lost_params << key unless params.include?(key)
         end
         @lost_params.empty?

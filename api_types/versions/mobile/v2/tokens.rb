@@ -4,7 +4,7 @@ module Teachbase
       module Mobile
         module V2
           class Tokens
-            SOURCE = "tokens"
+            SOURCE = "tokens".freeze
 
             include Teachbase::API::ParamChecker
             include Teachbase::API::MethodCaller
@@ -17,13 +17,12 @@ module Teachbase
             end
 
             def tokens
-              "#{SOURCE}"
+              SOURCE.to_s
             end
 
             def tokens_revoke
               "#{SOURCE}/revoke"
             end
-
           end
         end
       end

@@ -4,7 +4,7 @@ module Teachbase
   module API
     class Request
       SPLIT_SYMBOL = "_"
-      URL_ID_PARAMS_FORMAT = /(^id|_id$)/
+      URL_ID_PARAMS_FORMAT = /(^id|_id$)/.freeze
       DEFAULT_PAYLOAD_TYPE = :json
 
       attr_reader :lms_host,
@@ -21,7 +21,7 @@ module Teachbase
                   :rest_client,
                   :answer_type
 
-      def initialize(type_class_name, method_name, request_options = {}, token)    
+      def initialize(type_class_name, method_name, request_options = {}, token)
         @type_class_name = type_class_name
         @method_name = method_name
         @token = token
@@ -52,18 +52,18 @@ module Teachbase
       def post
         push_request do
           rest_client.post(request_url, payload.to_json,
-                                 content_type: DEFAULT_PAYLOAD_TYPE,
-                                 "X-Account-Id" => account_id.to_s,
-                                 "Authorization" => "Bearer #{@token.value}")
+                           content_type: DEFAULT_PAYLOAD_TYPE,
+                           "X-Account-Id" => account_id.to_s,
+                           "Authorization" => "Bearer #{@token.value}")
         end
       end
 
       def patch
         push_request do
           rest_client.patch(request_url, payload.to_json,
-                                 content_type: DEFAULT_PAYLOAD_TYPE,
-                                 "X-Account-Id" => account_id.to_s,
-                                 "Authorization" => "Bearer #{@token.value}")
+                            content_type: DEFAULT_PAYLOAD_TYPE,
+                            "X-Account-Id" => account_id.to_s,
+                            "Authorization" => "Bearer #{@token.value}")
         end
       end
 
@@ -103,7 +103,6 @@ module Teachbase
         end
       end
 
-
       def create_request_data
         @url_ids = fetch_ids_for_url
         @url_params = fetch_request_params
@@ -112,7 +111,7 @@ module Teachbase
 
       def find_api_class
         find_api_version_class
-        @api_class = Kernel.const_get("#{find_api_version_class.to_s}::#{camelize(@type_class_name)}")
+        @api_class = Kernel.const_get("#{find_api_version_class}::#{camelize(@type_class_name)}")
       end
 
       def find_api_version_class
@@ -146,7 +145,7 @@ module Teachbase
       end
 
       def sanitize_not_request_params
-        %i[method payload, api_version lms_host answer_type].each { |option| request_options.delete(option) }
+        %i[method payload api_version lms_host answer_type].each { |option| request_options.delete(option) }
       end
 
       def camelize(data)

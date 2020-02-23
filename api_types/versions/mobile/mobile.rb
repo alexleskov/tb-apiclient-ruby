@@ -4,7 +4,7 @@ require './api_types/versions/mobile/v2'
 module Teachbase
   module API
     module Types
-      module Mobile ; end
+      module Mobile; end
     end
   end
 end

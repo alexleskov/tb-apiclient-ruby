@@ -4,7 +4,7 @@ module Teachbase
       module Mobile
         module V2
           class SocialOauth
-            SOURCE = "oauth"
+            SOURCE = "oauth".freeze
 
             include Teachbase::API::ParamChecker
             include Teachbase::API::MethodCaller
@@ -17,7 +17,7 @@ module Teachbase
             end
 
             def oauth
-              "#{SOURCE}"
+              SOURCE.to_s
             end
           end
         end

@@ -4,7 +4,7 @@ module Teachbase
       module Mobile
         module V2
           class Scorms
-            SOURCE = "course_sessions"
+            SOURCE = "course_sessions".freeze
 
             include Teachbase::API::ParamChecker
             include Teachbase::API::MethodCaller
@@ -17,10 +17,9 @@ module Teachbase
             end
 
             def course_sessions_quiz_stats_check
-              check!(:ids, [:course_session_id, :id], url_ids)
-              "#{SOURCE}/#{url_ids[:course_session_id]}/scorm_packages/#{url_ids[:id]}"       
+              check!(:ids, %i[course_session_id id], url_ids)
+              "#{SOURCE}/#{url_ids[:course_session_id]}/scorm_packages/#{url_ids[:id]}"
             end
-
           end
         end
       end

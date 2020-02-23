@@ -11,8 +11,8 @@ require './api_types/types'
 module Teachbase
   module API
     class Client
-      API_TYPES = [:endpoint, :mobile]
-      API_VERSIONS = [1,2]
+      API_TYPES = %i[endpoint mobile].freeze
+      API_VERSIONS = [1, 2].freeze
       DEFAULT_ANSWER_TYPE = :json
 
       attr_reader :api_type, :api_version, :lms_host, :response, :token
@@ -28,9 +28,9 @@ module Teachbase
         client_params[:client_secret] ||= config.client_secret
         client_params[:token_expiration_time] ||= config.token_expiration_time
 
-        raise "No such API type. Use one of: #{API_TYPES}" unless [:endpoint, :mobile].include?(api_type.to_sym)
-        raise "No such API destination. Type: #{api_type}, version: #{api_version}" unless api_version_and_type_exists?(api_type, api_version) 
-        raise "Set up: 'client_id' and 'client_secret'" unless client_param?(client_params) 
+        raise "No such API type. Use one of: #{API_TYPES}" unless %i[endpoint mobile].include?(api_type.to_sym)
+        raise "No such API destination. Type: #{api_type}, version: #{api_version}" unless api_version_and_type_exists?(api_type, api_version)
+        raise "Set up: 'client_id' and 'client_secret'" unless client_param?(client_params)
         raise "Set up: 'user_login', 'password', 'account_id'" if api_mobile_type? && !mobile_param?(client_params)
 
         @token = Teachbase::API::Token.new(api_type, client_params)

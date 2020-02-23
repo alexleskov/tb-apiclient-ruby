@@ -4,7 +4,7 @@ module Teachbase
       module Mobile
         module V2
           class Documents
-            SOURCE = "documents"
+            SOURCE = "documents".freeze
 
             include Teachbase::API::ParamChecker
             include Teachbase::API::MethodCaller
@@ -17,9 +17,8 @@ module Teachbase
             end
 
             def documents
-              "#{SOURCE}"
+              SOURCE.to_s
             end
-
           end
         end
       end

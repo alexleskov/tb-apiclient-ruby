@@ -5,6 +5,6 @@ require './api_types/versions/endpoint/endpoint'
 
 module Teachbase
   module API
-    module Types ; end
+    module Types; end
   end
 end

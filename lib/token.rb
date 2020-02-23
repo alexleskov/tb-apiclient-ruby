@@ -3,7 +3,6 @@
 module Teachbase
   module API
     class Token
-
       class << self
         attr_reader :grant_types
       end
@@ -27,21 +26,21 @@ module Teachbase
         @account_id = params[:account_id]
         @grant_type = self.class.grant_types[api_type]
         @value = call_token
-        
+
         raise "API token '#{value}' is null" unless value
       end
 
       def call_token
-         if @params[:access_token]
-           @params[:access_token].to_s
-         else
-           token_request
-         end
+        if @params[:access_token]
+          @params[:access_token].to_s
+        else
+          token_request
+        end
       end
 
       def token_request
         r = @params[:rest_client].post "#{@params[:lms_host]}/oauth/token", create_payload.to_json,
-                            content_type: :json
+                                       content_type: :json
         raw_token_response = JSON.parse(r.body)
         @expired_at = access_token_expired_at(raw_token_response)
         @type = raw_token_response["token_type"]

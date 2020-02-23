@@ -4,7 +4,7 @@ module Teachbase
       module Mobile
         module V2
           class Activity
-            SOURCE = "user_activity"
+            SOURCE = "user_activity".freeze
 
             include Teachbase::API::ParamChecker
             include Teachbase::API::MethodCaller
@@ -17,7 +17,7 @@ module Teachbase
             end
 
             def user_activity
-              "#{SOURCE}"
+              SOURCE.to_s
             end
           end
         end

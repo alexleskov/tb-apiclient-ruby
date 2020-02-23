@@ -4,7 +4,7 @@ module Teachbase
       module Mobile
         module V2
           class Quizzes
-            SOURCE = "course_sessions"
+            SOURCE = "course_sessions".freeze
 
             include Teachbase::API::ParamChecker
             include Teachbase::API::MethodCaller
@@ -17,37 +17,36 @@ module Teachbase
             end
 
             def course_sessions_questions
-              check!(:ids, [:course_session_id, :id], url_ids)
+              check!(:ids, %i[course_session_id id], url_ids)
               "#{SOURCE}/#{url_ids[:course_session_id]}/questions/#{url_ids[:id]}"
             end
 
             def course_sessions_questions_submit
-              check!(:ids, [:course_session_id, :id], url_ids)
+              check!(:ids, %i[course_session_id id], url_ids)
               "#{course_sessions_questions}/submit"
             end
 
             def course_sessions_questions_track
-              check!(:ids, [:course_session_id, :id], url_ids)
+              check!(:ids, %i[course_session_id id], url_ids)
               "#{course_sessions_questions}/track"
             end
 
             def course_sessions_quizzes_start
-              check!(:ids, [:course_session_id, :id], url_ids)
+              check!(:ids, %i[course_session_id id], url_ids)
               "#{course_sessions_quizzes}/start"
             end
 
             def course_sessions_quizzes_results
-              check!(:ids, [:course_session_id, :id], url_ids)
+              check!(:ids, %i[course_session_id id], url_ids)
               "#{course_sessions_quizzes}/results"
             end
 
             private
 
             def course_sessions_quizzes
-              check!(:ids, [:course_session_id, :id], url_ids)
-              "#{SOURCE}/#{url_ids[:course_session_id]}/quizzes/#{url_ids[:id]}"  
+              check!(:ids, %i[course_session_id id], url_ids)
+              "#{SOURCE}/#{url_ids[:course_session_id]}/quizzes/#{url_ids[:id]}"
             end
-
           end
         end
       end

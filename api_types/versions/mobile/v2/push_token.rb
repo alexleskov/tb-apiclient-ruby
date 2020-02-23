@@ -4,7 +4,7 @@ module Teachbase
       module Mobile
         module V2
           class PushTokens
-            SOURCE = "users"
+            SOURCE = "users".freeze
 
             include Teachbase::API::ParamChecker
             include Teachbase::API::MethodCaller

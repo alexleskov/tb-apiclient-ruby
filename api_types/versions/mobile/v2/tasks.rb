@@ -4,7 +4,7 @@ module Teachbase
       module Mobile
         module V2
           class Tasks
-            SOURCE = "course_sessions"
+            SOURCE = "course_sessions".freeze
 
             include Teachbase::API::ParamChecker
             include Teachbase::API::MethodCaller
@@ -17,10 +17,9 @@ module Teachbase
             end
 
             def course_sessions_tasks
-              check!(:ids, [:session_id, :id], url_ids)
-              "#{SOURCE}/#{url_ids[:session_id]}/tasks/#{url_ids[:id]}"       
+              check!(:ids, %i[session_id id], url_ids)
+              "#{SOURCE}/#{url_ids[:session_id]}/tasks/#{url_ids[:id]}"
             end
-
           end
         end
       end

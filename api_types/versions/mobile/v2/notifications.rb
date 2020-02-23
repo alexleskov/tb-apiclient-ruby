@@ -4,7 +4,7 @@ module Teachbase
       module Mobile
         module V2
           class Notifications
-            SOURCE = "users"
+            SOURCE = "users".freeze
 
             include Teachbase::API::ParamChecker
             include Teachbase::API::MethodCaller
@@ -28,7 +28,6 @@ module Teachbase
               check!(:ids, [:id], url_ids)
               "#{users_notfications}/#{url_ids[:id]}/read"
             end
-
           end
         end
       end
