@@ -22,9 +22,10 @@ Other params:
 :client_id, :client_secret, :user_login, :password, :account_id, :token_expiration_time, :rest_client, :lms_host
 ```
 
-`client_id`, `client_secret`, `account_id`, `token_expiration_time`, `rest_client`, `lms_host` can be setted in config/secrets.yml
+Can be setted in config/secrets.yml:
+`client_id`, `client_secret`, `account_id`, `token_expiration_time`, `rest_client`, `lms_host` 
 
-Default `token_time_limit` = 7200 seconds.
+Default `token_time_limit` = `7200` seconds.
 
 
 #### Examples
@@ -48,6 +49,7 @@ Teachbase::API::Client.new(:mobile, 2, client_id: "", client_secret: "", user_lo
 ```
 
 On mobile API `user_login` is email or phone number.
+
 For success authorization in `mobile` Teachbase API must have set up `account_id`:
 
 ```ruby
@@ -70,6 +72,7 @@ Other params:
 ```
 
 Default answer type is `:json`
+
 Default payload type is `:json`
 
 
@@ -87,7 +90,7 @@ api = Teachbase::API::Client.new(:mobile, 2, client_id: "", client_secret: "", u
 request = client.request(:notification_settings, :profile_notification_settings)
 ```
 
-For `patch` or `post` methods must have set up `payload`.
+For `patch` or `post` methods you can set up `payload`.
 
 ```ruby
 payload = { "courses": true, "news": true, "tasks": true, "quizzes": true, "programs": true, "webinars": true }
@@ -122,7 +125,7 @@ See more about other methods in API docs: https://go.teachbase.ru/api-docs/
 
 ## Available methods
 
-Looking for available methods in 'api_types/versions' folder.
+Looking for available methods in `api_types/versions` folder.
 
 
 ## Extra
