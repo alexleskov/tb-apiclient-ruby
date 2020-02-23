@@ -15,14 +15,14 @@ module Teachbase
         when :ids
           raise "Url ids not exists. Set in request: '#{params}'" unless url_ids
         when :options
-          raise "Options for request not exists. Set in request: '#{params}'" unless request_options
+          raise "Can't find data for checking. Given: '#{check_data}'" unless check_data
         else
           raise "Can't find such param for checking: #{params}"
         end
 
         @lost_params = []
-        check_data.each do |key, _value|
-          @lost_params << key unless params.include?(key)
+        params.each do |param|
+          @lost_params << param unless check_data.keys.include?(param)
         end
         @lost_params.empty?
       end

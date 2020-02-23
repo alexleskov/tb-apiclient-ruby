@@ -12,6 +12,7 @@ module Teachbase
       attr_reader :grant_type,
                   :expired_at,
                   :api_type,
+                  :api_version,
                   :value,
                   :account_id,
                   :type,
@@ -20,8 +21,9 @@ module Teachbase
                   :created_at,
                   :resource_owner_id
 
-      def initialize(api_type, params)
+      def initialize(api_type, api_version, params)
         @api_type = api_type
+        @api_version = api_version
         @params = params
         @account_id = params[:account_id]
         @grant_type = self.class.grant_types[api_type]

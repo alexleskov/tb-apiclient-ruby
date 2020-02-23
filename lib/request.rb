@@ -26,10 +26,10 @@ module Teachbase
         @method_name = method_name
         @token = token
         @api_type = token.api_type
+        @api_version = token.api_version
         @account_id = token.account_id
         @request_options = request_options
         @lms_host = request_options[:lms_host]
-        @api_version = request_options[:api_version]
         @rest_client = request_options[:rest_client]
         @answer_type = request_options[:answer_type]
         @payload = request_options[:payload] || {}
@@ -145,7 +145,7 @@ module Teachbase
       end
 
       def sanitize_not_request_params
-        %i[method payload api_version lms_host answer_type].each { |option| request_options.delete(option) }
+        %i[method payload api_version lms_host answer_type rest_client].each { |option| request_options.delete(option) }
       end
 
       def camelize(data)
