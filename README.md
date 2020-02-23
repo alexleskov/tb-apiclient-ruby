@@ -136,3 +136,10 @@ api = Teachbase::API::Client.new(:mobile, 2, client_id: "", client_secret: "", u
 response = api.request(:course_sessions, :course_sessions, filter: :active, page: 1, per_page: 100, answer_type: :raw).get # get raw response
 response.headers
 ```
+
+If you already have access token value and don't want to request it again:
+
+```ruby
+api = Teachbase::API::Client.new(:mobile, 2, access_token: "sd87fsdfkj1k324923sdfskjf3")
+```
+
